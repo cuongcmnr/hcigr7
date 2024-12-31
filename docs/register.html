@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a30fc797a9.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <title>Travel Suggestions & Reviews</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="custom-header">
+        <div class="logo" onclick="location.href='index.html'" style="cursor: pointer;">
+            <img src="img/logo.png" alt="Company Logo">
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchBar" placeholder="Search for places, activities...">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <div class="actions">
+            <button class="review" onclick="location.href='select-place.html'">Write a Review</button>
+            <button class="plan" onclick="location.href='plan-trip.html'">Plan Your Trip</button>
+            <button class="login" onclick="location.href='login.html'">Login</button>
+            <button class="register" onclick="location.href='register.html'">Register</button>
+        </div>
+    </header>
+
+    <div class="register-form">
+        <form id="registerForm">
+            <h2>Register</h2>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <script src="check.js"></script>
+    <script>
+        const loggedInUser = localStorage.getItem('loggedInUser');
+        if (loggedInUser) {
+            document.querySelector('.register-form').innerHTML = '<h1>403 Forbidden: You are already logged in. Please logout first.</h1>';
+            document.querySelector('.register-form').style.textAlign = 'center';
+            document.querySelector('.register-form').style.marginTop = '20%';  
+            }
+        else {
+            document.getElementById('registerForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const username = event.target.username.value;
+                const password = event.target.password.value;
+                const email = event.target.email.value;
+
+                initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}` }).then(function (SQL) {
+                    let db;
+                    const savedDb = localStorage.getItem('userDb');
+                    if (savedDb) {
+                        db = new SQL.Database(new Uint8Array(JSON.parse(savedDb)));
+                    } else {
+                        db = new SQL.Database();
+                        db.run("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, password TEXT, email TEXT)");
+                    }
+
+                    const stmt = db.prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
+                    stmt.run([username, password, email]);
+                    stmt.free();
+
+                    const data = db.export();
+                    localStorage.setItem('userDb', JSON.stringify(Array.from(data)));
+
+                    alert('Registration successful! Redirecting to login page.');
+                    window.location.href = 'login.html';
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>

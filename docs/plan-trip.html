@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan Your Trip</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+    <header class="custom-header">
+        <div class="logo" onclick="location.href='index.html'" style="cursor: pointer;">
+            <img src="img/logo.png" alt="Company Logo">
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchBar" placeholder="Search for places, activities...">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <div class="actions">
+            <button class="review" onclick="location.href='select-place.html'">Write a Review</button>
+            <button class="plan" onclick="location.href='plan-trip.html'">Plan Your Trip</button>
+            <button class="login" onclick="location.href='login.html'">Login</button>
+            <button class="register" onclick="location.href='register.html'">Register</button>
+        </div>
+    </header>
+    
+    <div class="container-wrapper">
+        <!-- Step 1 - Trip Details -->
+        <div class="container" id="step1">
+            <h1>Plan Your Trip</h1>
+            <label for="trip-title">Trip Title</label>
+            <input type="text" id="trip-title" placeholder="Enter trip title">
+            <label for="trip-title">Location</label>
+            <input type="text" id="trip-title" placeholder="Enter location">
+
+            <label for="trip-date">Trip Date</label>
+            <input type="date" id="trip-date">
+
+            <label>Preferences</label>
+            <div class="preferences">
+                <button onclick="toggleSelect(this)">Nature</button>
+                <button onclick="toggleSelect(this)">Foodie Spot</button>
+                <button onclick="toggleSelect(this)">Budget-Friendly</button>
+                <button onclick="toggleSelect(this)">Historical & Cultural</button>
+                <button onclick="toggleSelect(this)">Family-Friendly</button>
+            </div>
+            <button class="next" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 2 - Place Selection -->
+        <div class="container hidden" id="step2">
+            <h1>Plan Your Trip</h1>
+            <p>Select places you plan to visit</p>
+            <label>Selected Places</label>
+            <div class="slider" id="selected-places"></div>
+
+            <label for="search">Search Places</label>
+            <input type="text" id="search" placeholder="Search places..." oninput="filterResults()">
+            <div class="slider" id="search-results"></div>
+
+            <label>Saved Places</label>
+            <div class="slider" id="saved-places"></div>
+
+            <label>Suggested Places</label>
+            <div class="slider" id="suggested-places"></div>
+
+            <button class="back" onclick="prevStep()">Back</button>
+            <button class="next" onclick="nextStep()">Next</button>
+        </div>
+
+        <!-- Step 3 - Activity Selection -->
+        <div class="container hidden" id="step3">
+            <h1>Plan Your Trip</h1>
+            <p>Add activities for selected places</p>
+            <div id="activities-section"></div>
+
+            
+            <button class="back" onclick="prevStep()">Back</button>
+            <button class="next" onclick="submitTrip()">Submit</button>
+        </div>
+    </div>
+    <script src="check.js"></script>
+    <script>
+        let currentStep = 1;
+        const places = [
+            { name: 'Beautiful Beach', location: 'Miami', img: 'img/1.jpg' },
+            { name: 'Mountain Escape', location: 'Colorado', img: 'img/2.jpg' },
+            { name: 'Sunset Park', location: 'San Francisco', img: 'img/3.jpg' }
+        ];
+
+        function nextStep() {
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            currentStep++;
+            document.getElementById(`step${currentStep}`).classList.remove('hidden');
+            if (currentStep === 2) loadPlaces();
+            if (currentStep === 3) loadActivities();
+        }
+
+        function prevStep() {
+            document.getElementById(`step${currentStep}`).classList.add('hidden');
+            currentStep--;
+            document.getElementById(`step${currentStep}`).classList.remove('hidden');
+        }
+
+        function toggleSelect(button) {
+            button.classList.toggle('selected');
+        }
+
+        function loadPlaces() {
+            const saved = document.getElementById('saved-places');
+            const suggested = document.getElementById('suggested-places');
+            saved.innerHTML = '';
+            suggested.innerHTML = '';
+            places.forEach(place => {
+                const card = `<div class="place-card" onclick="addPlace('${place.name}')">
+                    <img src="${place.img}" alt="Place">
+                    <p>${place.name} - ${place.location}</p>
+                </div>`;
+                saved.innerHTML += card;
+                suggested.innerHTML += card;
+            });
+        }
+
+        function addPlace(placeName) {
+            const selected = document.getElementById('selected-places');
+            const place = document.createElement('div');
+            place.className = 'place-card';
+            place.innerHTML = `<p>${placeName}</p>`;
+            selected.appendChild(place);
+        }
+
+        function filterResults() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const results = document.getElementById('search-results');
+            results.innerHTML = '';
+            places.forEach(place => {
+                if (place.name.toLowerCase().includes(query)) {
+                    const card = `<div class="place-card" onclick="addPlace('${place.name}')">
+                        <img src="${place.img}" alt="Place">
+                        <p>${place.name} - ${place.location}</p>
+                    </div>`;
+                    results.innerHTML += card;
+                }
+            });
+        }
+
+        function loadActivities() {
+            const activities = document.getElementById('activities-section');
+            activities.innerHTML = '';
+            places.forEach(place => {
+                const card = document.createElement('div');
+                card.className = 'activity-card';
+                card.innerHTML = `
+                    <img src="${place.img}" alt="${place.name}">
+                    <div>
+                        <h3>${place.name}</h3>
+                        <input type="text" placeholder="Add activity...">
+                        <button onclick="addActivity(this)">Add</button>
+                        <div class="activities-list"></div>
+                        <div class="suggested-activities">
+                            <h4>Suggested Activities</h4>
+                            <p onclick="addSuggestedActivity(this, 'Snorkeling')">Snorkeling <i class="fa-solid fa-plus"></i></p>
+                            <p onclick="addSuggestedActivity(this, 'Hiking')">Hiking <i class="fa-solid fa-plus"></i></p>
+                            <p onclick="addSuggestedActivity(this, 'Sightseeing')">Sightseeing <i class="fa-solid fa-plus"></i></p>
+                        </div>
+                    </div>
+                `;
+                activities.appendChild(card);
+            });
+        }
+
+        function addActivity(button) {
+            const input = button.previousElementSibling;
+            if (input.value.trim() !== '') {
+                const activityList = button.parentNode.querySelector('.activities-list');
+                const activityItem = document.createElement('p');
+                activityItem.innerText = `- ${input.value}`;
+                activityList.appendChild(activityItem);
+                input.value = '';
+            }
+        }
+
+        function addSuggestedActivity(element, activity) {
+            const parentCard = element.closest('.activity-card');
+            const activityList = parentCard.querySelector('.activities-list');
+            const activityItem = document.createElement('p');
+            activityItem.innerText = `- ${activity}`;
+            activityList.appendChild(activityItem);
+        }
+
+        function submitTrip() {
+            window.location.href = 'trip-summary.html';
+        }
+    </script>
+</body>
+</html>

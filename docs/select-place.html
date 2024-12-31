@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Place for Review</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <header class="custom-header">
+        <div class="logo" onclick="location.href='index.html'" style="cursor: pointer;">
+            <img src="img/logo.png" alt="Company Logo">
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchBar" placeholder="Search for places, activities...">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <div class="actions">
+            <button class="review" onclick="location.href='select-place.html'">Write a Review</button>
+            <button class="plan" onclick="location.href='plan-trip.html'">Plan Your Trip</button>
+            <button class="login" onclick="location.href='login.html'">Login</button>
+            <button class="register" onclick="location.href='register.html'">Register</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Select a Place to Write a Review</h1>
+        <div class="search-bar">
+            <input type="text" id="placeSearch" placeholder="Search for a place...">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <div class="results" id="searchResults">
+            <div class="result-item" onclick="selectPlace('Beautiful Beach')">
+                <img src="img/1.jpg" alt="Beautiful Beach" class="thumbnail">
+                Beautiful Beach - Miami
+            </div>
+            <div class="result-item" onclick="selectPlace('Mountain Escape')">
+                <img src="img/2.jpg" alt="Mountain Escape" class="thumbnail">
+                Mountain Escape - Colorado
+            </div>
+            <div class="result-item" onclick="selectPlace('Sunset Park')">
+                <img src="img/3.jpg" alt="Sunset Park" class="thumbnail">
+                Sunset Park - San Francisco
+            </div>
+        </div>
+            </div>
+    <script src="check.js"></script>
+    <script>
+        const searchInput = document.getElementById('placeSearch');
+        const results = document.getElementById('searchResults');
+        const resultItems = document.querySelectorAll('.result-item');
+
+        searchInput.addEventListener('input', () => {
+            const value = searchInput.value.toLowerCase();
+            let showResults = false;
+
+            resultItems.forEach(item => {
+                if (item.textContent.toLowerCase().includes(value)) {
+                    item.style.display = 'block';
+                    showResults = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            results.style.display = showResults ? 'block' : 'none';
+        });
+
+        function selectPlace(placeName) {
+            // alert(`Redirecting to review page for: ${placeName}`);
+            // Simulate navigation to review page
+            window.location.href = 'write-review.html';
+        }
+    </script>
+</body>
+</html>
